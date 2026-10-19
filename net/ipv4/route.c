@@ -2853,7 +2853,7 @@ struct rtable *ip_route_output_key_hash_rcu(struct net *net, struct flowi4 *fl4,
 	if (err) {
 		res->fi = NULL;
 		res->table = NULL;
-		if (fl4->flowi4_oif &&
+		if (fl4->flowi4_oif && err != -EACCES &&
 		    (ipv4_is_multicast(fl4->daddr) || !fl4->flowi4_l3mdev)) {
 			/* Apparently, routing tables are wrong. Assume,
 			 * that the destination is on link.
@@ -2864,13 +2864,14 @@ struct rtable *ip_route_output_key_hash_rcu(struct net *net, struct flowi4 *fl4,
 			 * addresses. When oif is specified, routing
 			 * tables are looked up with only one purpose:
 			 * to catch if destination is gatewayed, rather than
-			 * direct. Moreover, if MSG_DONTROUTE is set,
-			 * we send packet, ignoring both routing tables
-			 * and ifaddr state. --ANK
-			 *
+			 * direct.
 			 *
 			 * We could make it even if oif is unknown,
 			 * likely IPv6, but we do not.
+			 *
+			 * Additionally, when oif is specified, routing lookup
+			 * allows us to check if destination is prohibited
+			 * (-EACCES). LS.
 			 */
 
 			if (fl4->saddr == 0)
