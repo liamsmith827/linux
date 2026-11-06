@@ -59,6 +59,8 @@ struct fib_lookup_arg {
 	int			flags;
 #define FIB_LOOKUP_NOREF		1
 #define FIB_LOOKUP_IGNORE_LINKSTATE	2
+/* Return -ESRCH on an IPv4 lookup that doesn't terminate on a rule or route. */
+#define FIB_LOOKUP_REPORT_MISS		4
 };
 
 struct fib_rules_ops {
